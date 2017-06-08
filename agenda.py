@@ -165,88 +165,93 @@ def organizar(linhas):
 # determinado projeto; (vi) atividades de determinado dia (data específica, hoje ou amanhã). Isso não
 # é uma das tarefas básicas do projeto, porém. 
 def listar():
+  return
 
-  ################ COMPLETAR
-  return 
+# converte uma data e hora do formato 'ddmmaaaa', 'hhmm' para um inteiro aaaammddhhmm
+def dataHoraInt(data, hora):
+  if data == '':
+    dataInteiro = '99999999'
+  else:
+    ano = data[4:]
+    mes = data[2:4]
+    dia = data[:2]
+    dataInteiro = ano + mes + dia
+  if hora == '':
+    horaInteiro = '9999'
+  else:
+    horaInteiro = hora
+  return int(dataInteiro + horaInteiro)
+
+# Recebe uma lista de tuplas no formato (n, 'item') e ordena os itens de acordo com n
+def bubbleSortporChave(lista):
+  desordenado = True
+  iteracao = len(lista) -1
+  while iteracao > 0 and desordenado:
+    desordenado = False
+    for i in range(iteracao):
+      if lista[i][0] > lista[i+1][0]:
+        lista[i], lista[i+1] = lista[i+1], lista[i]
+        desordenado = True
+    iteracao -= 1
+  # Remove o numero usado para ordenar
+  i = 0
+  while i < len(lista):
+    lista[i] = lista[i][1]
+    i += 1
+  return lista
 
 def ordenarPorDataHora(itens):
+  dataseItens = []
+  # Cria uma lista que contém um número inteiro derivado da data, seguindo o modelo YYYYMMAAHHmm
+  for lin in itens: # l = (desc, (data, hora, pri, cont, projeto))
+    data = str(lin[1][0])
+    hora = str(lin[1][1])
+    dataHora = dataHoraInt(data, hora)
+    item = (dataHora, lin)
+    dataseItens.append(item)
+  listaOrdenada = bubbleSortPorChave(dataseItens)
+  return lstOrdenada
 
-  ################ COMPLETAR
-
-  return itens
-   
 def ordenarPorPrioridade(itens):
-
-  ################ COMPLETAR
-
-  return itens
+  prieItens = []
+  for linha in itens:
+    pri = linha[1][2]
+    if pri == '': # No caso de não haver prioridade será atribuída a menor possível
+      letra = 'Z'
+    else:
+      letra = pri[1].upper() # Extrai apenas a letra de '(L)'
+    item = (letra, l)
+    prieItens.append(item)
+  listaOrdenada = bubbleSortPorChave(prieItens)
+  return listaOrdenada
 
 def fazer(num):
-
-  ################ COMPLETAR
-
   return 
 
 def remover():
-
-  ################ COMPLETAR
-
   return
 
 # prioridade é uma letra entre A a Z, onde A é a mais alta e Z a mais baixa.
 # num é o número da atividade cuja prioridade se planeja modificar, conforme
 # exibido pelo comando 'l'. 
 def priorizar(num, prioridade):
-
-  ################ COMPLETAR
-
   return 
 
-
-
-# Esta função processa os comandos e informações passados através da linha de comando e identifica
-# que função do programa deve ser invocada. Por exemplo, se o comando 'adicionar' foi usado,
-# isso significa que a função adicionar() deve ser invocada para registrar a nova atividade.
-# O bloco principal fica responsável também por tirar espaços em branco no início e fim dos strings
-# usando o método strip(). Além disso, realiza a validação de horas, datas, prioridades, contextos e
-# projetos. 
 def processarComandos(comandos) :
   if comandos[1] == ADICIONAR:
     comandos.pop(0) # remove 'agenda.py'
-    comandos.pop(0) # remove 'adicionar'
+    comandos.pop(0) # remove 'a'
     itemParaAdicionar = organizar([' '.join(comandos)])[0]
-    # itemParaAdicionar = (descricao, (prioridade, data, hora, contexto, projeto))
-    adicionar(itemParaAdicionar[0], itemParaAdicionar[1]) # novos itens não têm prioridade
+    adicionar(itemParaAdicionar[0], itemParaAdicionar[1]) # (descricao, (data, hora, pri, contexto, projeto))
   elif comandos[1] == LISTAR:
-    return    
-    ################ COMPLETAR
-
+    listar()
   elif comandos[1] == REMOVER:
-    return    
-
-    ################ COMPLETAR    
-
+    return
   elif comandos[1] == FAZER:
-    return    
-
-    ################ COMPLETAR
-
+    return
   elif comandos[1] == PRIORIZAR:
-    return    
-
-    ################ COMPLETAR
-
+    return
   else :
     print("Comando inválido.")
-    
-  
-# sys.argv é uma lista de strings onde o primeiro elemento é o nome do programa
-# invocado a partir da linha de comando e os elementos restantes são tudo que
-# foi fornecido em sequência. Por exemplo, se o programa foi invocado como
-#
-# python3 agenda.py a Mudar de nome.
-#
-# sys.argv terá como conteúdo
-#
-# ['agenda.py', 'a', 'Mudar', 'de', 'nome']
-processarComandos(sys.argv)
+
+processarComandos(sys.argv) # sys.argv = ['agenda.py', 'a', 'Mudar', 'de', 'nome']
