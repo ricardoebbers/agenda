@@ -7,7 +7,7 @@
 
 a. Praticar a escrita de funções e programas com foco em:
  1. Strings;
- 2. Vetores
+ 2. Vetores;
  3. Listas;
  4. Tuplas;
  5. Dicionários;
