@@ -1,13 +1,25 @@
-Comer menos açúcar 
-23052017 1030 Reunião com Huguinho, Luizinho e Zezinho. @Skype +Pesquisa
-(B) Terminar a especificação do projeto de IF968. +IF968
-(B) Publicar a especificação do projeto de IF968 terminada. +IF968
-(A) Corrigir provas de IF968 +IF968
-23052017 (A) Ler artigo IST. +Serviço
-2330 Dormir cedo @Casa
-(B) Revisar artigo IST +Service
-(B) Revisar artigos SBES +Service
-(B) Revisar artigos SBES Education +Service
-(B) Revisar artigos SBES Insightful Ideas +Service
-(B) Revisar artigos SBLP +Service
-(D) Read "Optimizing energy consumption of GUIs in android apps: A multi-objective approach."
+Tomar menos café +Saude
+0545 Acordar antes da função soneca +Work
+(A) 18062017 2359 Finalizar o projeto de P1 @Casa +IF968
+(B) 05062017 Startar o projeto final de ISI +IF966
+(A) 06062017 Revisar assunto da prova de Mat. Discreta +IF967
+(B) 07062017 Estudar integrais +MA026
+(C) Buscar informações sobre treino de JiuJitsu +Saude
+2230 Dormir cedo +Saude
+(D) Reler Blink
+Atualizar perfil do Linkedin
+32062017 Lembrar que meses possuem no máximo 31 dias +ProjetoP1
+30022017 Testar se fevereiro está funcionando bem +ProjetoP1
+2530 Analisar limite de 24h diárias @Casa +ProjetoP1
+Decidir se o @CIn já vale como segunda @Casa +ProjetoP1
+-1500 é uma hora válida? +ProjetoP1
+(menino) é uma prioridade qualquer? +ProjetoP1
+04062017 1710 Um projeto é um projeto +OutroProjetoP1 +ProjetoP1
+!@#$%¨&* (A) ¹5³£¬ (B) +ProjetoP1
+12jun2017 é o dia dos namorados +ProjetoP1
+25dez é natal +ProjetoP1
+   abc   (D) /?°₢ +ProjetoP1
+"aspas" 'quebram' ""códigos?"" +ProjetoP1
+Talvez #jogos#da#velha#? +ProjetoP1
+e que tal // /n ? +ProjetoP1
+Mudar de nome
