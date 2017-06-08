@@ -1,9 +1,9 @@
 # if968-agenda
-# Projeto da cadeira de Programação 01 do curso de Sistemas de Informação da UFPE
+### Projeto da cadeira de Programação 01 do curso de Sistemas de Informação da UFPE
 
-## Objetivo geral do projeto:
-Desenvolver um sistema não-trivial em Python;
-## Objetivos específicos:
+#### Objetivo geral do projeto:
+  Desenvolver um sistema não-trivial em Python;
+#### Objetivos específicos:
 
 a. Praticar a escrita de funções e programas com foco em:
  1. Strings;
