@@ -1,5 +1,5 @@
 # if968-agenda
-# Projeto destinado à cadeira de Programação 01 do curso de Sistemas de Informação da UFPE
+# Projeto da cadeira de Programação 01 do curso de Sistemas de Informação da UFPE
 
 ## Objetivo geral do projeto:
 Desenvolver um sistema não-trivial em Python;
