@@ -18,57 +18,51 @@ FAZER = 'f'
 PRIORIZAR = 'p'
 LISTAR = 'l'
 
-# Imprime texto com cores. Por exemplo, para imprimir "Oi mundo!" em vermelho, basta usar
-#
 # printCores('Oi mundo!', RED)
-# printCores('Texto amarelo e negrito', YELLOW + BOLD)
 
 def printCores(texto, cor) :
   print(cor + texto + RESET)
-  
 
-# Adiciona um compromisso aa agenda. Um compromisso tem no minimo
-# uma descrição. Adicionalmente, pode ter, em caráter opcional, uma
-# data (formato DDMMAAAA), um horário (formato HHMM), uma prioridade de A a Z, 
-# um contexto onde a atividade será realizada (precedido pelo caractere
-# '@') e um projeto do qual faz parte (precedido pelo caractere '+'). Esses
-# itens opcionais são os elementos da tupla "extras", o segundo parâmetro da
-# função.
-#
-# extras ~ (data, hora, prioridade, contexto, projeto)
-#
-# Qualquer elemento da tupla que contenha um string vazio ('') não
-# deve ser levado em consideração. 
 def adicionar(descricao, extras):
-
   # não é possível adicionar uma atividade que não possui descrição. 
-  if descricao  == '' :
+  if descricao  == '':
     return False
-  
-
-  ################ COMPLETAR
-
-
-  # Escreve no TODO_FILE. 
-  try: 
-    fp = open(TODO_FILE, 'a')
-    fp.write(novaAtividade + "\n")
-    fp.close()
-  except IOError as err:
-    print("Não foi possível escrever para o arquivo " + TODO_FILE)
-    print(err)
-    return False
-
-  return True
-
+  else:
+    data = ''
+    hora = ''
+    pri = ''
+    contexto = ''
+    projeto = ''
+    novaAtividade = ''
+    for e in extras:
+      if dataValida(e):
+        data = e
+      elif horaValida(e):
+        hora = e
+      elif prioridadeValida(e):
+        pri = e
+      elif contextoValido(e):
+        contexto = e
+      elif projetoValido(e):
+        projeto = e
+    novaAtividade = ' '.join([data, hora, pri, descricao, contexto, projeto])
+    # Escreve no TODO_FILE.
+    try:
+      fp = open(TODO_FILE, 'a')
+      fp.write(novaAtividade + "\n")
+      fp.close()
+    except IOError as err:
+      print("Não foi possível escrever para o arquivo " + TODO_FILE)
+      print(err)
+      return False
+    return True
 
 # Valida a prioridade.
 def prioridadeValida(pri):
-
-  ################ COMPLETAR
-  
+  alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  if (len(pri) == 3) and (pri[0] == '(') and (pri[1].upper() in alfabeto) and (pri[2] == ')'):
+    return True
   return False
-
 
 # Valida a hora. Consideramos que o dia tem 24 horas, como no Brasil, ao invés
 # de dois blocos de 12 (AM e PM), como nos EUA.
@@ -76,30 +70,39 @@ def horaValida(horaMin) :
   if len(horaMin) != 4 or not soDigitos(horaMin):
     return False
   else:
-    ################ COMPLETAR
+    horas = int(horaMin[:2])
+    minutos = int(horaMin[2:])
+    if (horas < 0) or (minutos < 0) or (horas > 23) or (minutos > 59):
+      return False
     return True
 
 # Valida datas. Verificar inclusive se não estamos tentando
 # colocar 31 dias em fevereiro. Não precisamos nos certificar, porém,
 # de que um ano é bissexto. 
-def dataValida(data) :
-
-  ################ COMPLETAR
-
-  return False
+def dataValida(data):
+  mes30 = [4, 6, 9, 11]
+  if len(data) != 8 or not soDigitos(data):
+    return False
+  else:
+    dia = int(data[:2])
+    mes = int(data[2:4])
+    ano = int(data[4:])
+    if (ano < 1000) or (ano > 9999) or (mes < 1) or (mes > 12) or (dia < 1) or (dia > 31):
+      return False
+    elif (mes == 2 and dia > 29) or ((mes in mes30) and dia == 31):
+      return False
+    return True
 
 # Valida que o string do projeto está no formato correto. 
 def projetoValido(proj):
-
-  ################ COMPLETAR
-
+  if (len(proj) > 1) and (proj[0] == '+'):
+    return True
   return False
 
 # Valida que o string do contexto está no formato correto. 
 def contextoValido(cont):
-
-  ################ COMPLETAR
-
+  if (len(cont) > 1) and (cont[0] == '@'):
+    return True
   return False
 
 # Valida que a data ou a hora contém apenas dígitos, desprezando espaços
@@ -111,7 +114,6 @@ def soDigitos(numero) :
     if x < '0' or x > '9' :
       return False
   return True
-
 
 # Dadas as linhas de texto obtidas a partir do arquivo texto todo.txt, devolve
 # uma lista de tuplas contendo os pedaços de cada linha, conforme o seguinte
