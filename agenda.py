@@ -19,7 +19,6 @@ PRIORIZAR = 'p'
 LISTAR = 'l'
 
 # printCores('Oi mundo!', RED)
-
 def printCores(texto, cor) :
   print(cor + texto + RESET)
 
@@ -34,6 +33,7 @@ def adicionar(descricao, extras):
     contexto = ''
     projeto = ''
     novaAtividade = ''
+    # Checa se cada parte extra é um atributo válido 
     for e in extras:
       if dataValida(e):
         data = e
@@ -46,6 +46,7 @@ def adicionar(descricao, extras):
       elif projetoValido(e):
         projeto = e
     novaAtividade = ' '.join([data, hora, pri, descricao, contexto, projeto])
+    novaAtividade = ' '.join(novaAtividade.split()) # Remove espaços duplos
     # Escreve no TODO_FILE.
     try:
       fp = open(TODO_FILE, 'a')
@@ -115,59 +116,100 @@ def soDigitos(numero) :
       return False
   return True
 
-# Dadas as linhas de texto obtidas a partir do arquivo texto todo.txt, devolve
-# uma lista de tuplas contendo os pedaços de cada linha, conforme o seguinte
-# formato:
-#
-# (descrição, prioridade, (data, hora, contexto, projeto))
-#
-# É importante lembrar que linhas do arquivo todo.txt devem estar organizadas de acordo com o
-# seguinte formato:
-#
-# DDMMAAAA HHMM (P) DESC @CONTEXT +PROJ
-#
-# Todos os itens menos DESC são opcionais. Se qualquer um deles estiver fora do formato, por exemplo,
-# data que não tem todos os componentes ou prioridade com mais de um caractere (além dos parênteses),
-# tudo que vier depois será considerado parte da descrição.  
 def organizar(linhas):
   itens = []
-
   for l in linhas:
-    data = '' 
+    data = ''
     hora = ''
     pri = ''
     desc = ''
     contexto = ''
     projeto = ''
-  
     l = l.strip() # remove espaços em branco e quebras de linha do começo e do fim
     tokens = l.split() # quebra o string em palavras
-
-    # Processa os tokens um a um, verificando se são as partes da atividade.
-    # Por exemplo, se o primeiro token é uma data válida, deve ser guardado
-    # na variável data e posteriormente removido a lista de tokens. Feito isso,
-    # é só repetir o processo verificando se o primeiro token é uma hora. Depois,
-    # faz-se o mesmo para prioridade. Neste ponto, verifica-se os últimos tokens
-    # para saber se são contexto e/ou projeto. Quando isso terminar, o que sobrar
-    # corresponde à descrição. É só transformar a lista de tokens em um string e
-    # construir a tupla com as informações disponíveis. 
-
-    ################ COMPLETAR
-
+    for t in tokens:
+      if prioridadeValida(t):
+        pri = t
+      elif horaValida(t):
+        hora = t
+      elif dataValida(t):
+        data = t
+      elif projetoValido(t):
+        projeto = t
+      elif contextoValido(t):
+        contexto = t
+      else:
+        desc = ' '.join([desc, t])
     itens.append((desc, (data, hora, pri, contexto, projeto)))
-
   return itens
 
+def ler(arquivo):
+  try:
+    fp = open(arquivo, 'r', encoding="utf-8")
+    linhas = fp.readlines()
+    fp.close()
+  except IOError as err:
+    print("Não foi possível ler o arquivo " + arquivo)
+    print(err)
+    return False
+  return linhas
 
-# Datas e horas são armazenadas nos formatos DDMMAAAA e HHMM, mas são exibidas
-# como se espera (com os separadores apropridados). 
-#
-# Uma extensão possível é listar com base em diversos critérios: (i) atividades com certa prioridade;
-# (ii) atividades a ser realizadas em certo contexto; (iii) atividades associadas com
-# determinado projeto; (vi) atividades de determinado dia (data específica, hoje ou amanhã). Isso não
-# é uma das tarefas básicas do projeto, porém. 
+def formataData(data):
+  dataFormatada = ''
+  if data != '':
+    dia = data[:2]
+    mes = data[2:4]
+    ano = data[4:]
+    dataFormatada = '/'.join([dia, mes, ano])
+  return dataFormatada
+
+def formataHora(horario):
+  horaFormatada = ''
+  if horario != '':
+    hora = horario[:2]
+    minuto = horario[2:]
+    horaFormatada = ':'.join([hora, minuto])
+  return horaFormatada
+
+def colore(prioridade):
+  if prioridade == '':
+    return RESET
+  else:
+    letra = prioridade[1]
+    if letra == 'A':
+      cor = YELLOW
+    elif letra == 'B':
+      cor = BLUE
+    elif letra == 'C':
+      cor = CYAN
+    elif letra == 'D':
+      cor = GREEN
+  return cor
+    
 def listar():
-  return
+  linhas = ler(TODO_FILE)
+  linhas = organizar(linhas)
+  linhas = ordenarPorDataHora(linhas)
+  linhas = ordenarPorPrioridade(linhas)
+  # Imprime cada linha de forma ordenada, numerada e colorida
+  lstOrdenada = []
+  i = 0
+  while i < len(linhas):
+    l = linhas[i]
+    desc = l[0]
+    data = formataData(l[1][0])
+    hora = formataHora(l[1][1])
+    pri = l[1][2].upper()
+    cont = l[1][3]
+    proj = l[1][4]
+    cor = colore(pri)
+    linha = ' '.join([data, hora, pri, desc, cont, proj])
+    linha = ' '.join(linha.split()) # para remover espaços duplos
+    lstOrdenada.append(linha)
+    printCores(linha, cor)
+    i += 1
+
+  return lstOrdenada
 
 # converte uma data e hora do formato 'ddmmaaaa', 'hhmm' para um inteiro aaaammddhhmm
 def dataHoraInt(data, hora):
@@ -184,8 +226,8 @@ def dataHoraInt(data, hora):
     horaInteiro = hora
   return int(dataInteiro + horaInteiro)
 
-# Recebe uma lista de tuplas no formato (n, 'item') e ordena os itens de acordo com n
-def bubbleSortporChave(lista):
+# Recebe uma lista de tuplas no formato [(n, 'item'),...] e ordena os itens de acordo com n
+def bubbleSortPorChave(lista):
   desordenado = True
   iteracao = len(lista) -1
   while iteracao > 0 and desordenado:
@@ -212,7 +254,7 @@ def ordenarPorDataHora(itens):
     item = (dataHora, lin)
     dataseItens.append(item)
   listaOrdenada = bubbleSortPorChave(dataseItens)
-  return lstOrdenada
+  return listaOrdenada
 
 def ordenarPorPrioridade(itens):
   prieItens = []
@@ -222,7 +264,7 @@ def ordenarPorPrioridade(itens):
       letra = 'Z'
     else:
       letra = pri[1].upper() # Extrai apenas a letra de '(L)'
-    item = (letra, l)
+    item = (letra, linha)
     prieItens.append(item)
   listaOrdenada = bubbleSortPorChave(prieItens)
   return listaOrdenada
@@ -230,7 +272,7 @@ def ordenarPorPrioridade(itens):
 def fazer(num):
   return 
 
-def remover():
+def remover(num):
   return
 
 # prioridade é uma letra entre A a Z, onde A é a mais alta e Z a mais baixa.
@@ -256,4 +298,4 @@ def processarComandos(comandos) :
   else :
     print("Comando inválido.")
 
-processarComandos(sys.argv) # sys.argv = ['agenda.py', 'a', 'Mudar', 'de', 'nome']
+#processarComandos(sys.argv) # sys.argv = ['agenda.py', 'a', 'Mudar', 'de', 'nome']
