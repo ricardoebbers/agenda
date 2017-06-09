@@ -17,10 +17,19 @@ FAZER = 'f'
 PRIORIZAR = 'p'
 LISTAR = 'l'
 
-# printCores('Oi mundo!', RED)
-def printCores(texto, cor) :
-  print(cor + texto + RESET)
+def ler(arquivo):
+  try:
+    fp = open(arquivo, 'r', encoding="utf-8")
+    linhas = fp.readlines()
+    fp.close()
+  except IOError as err:
+    print("Não foi possível ler o arquivo " + arquivo)
+    print(err)
+    return False
+  return linhas
 
+# VALIDAÇÃO DE ATRIBUTOS:
+# Checagem de Atributos:
 def checaAtributos(lista):
   data, hora, pri, contexto, projeto, desc = ['' for x in range(6)]
   for x in lista:
@@ -39,25 +48,15 @@ def checaAtributos(lista):
 
   return (data, hora, pri, contexto, projeto, desc)
 
-
-def adicionar(descricao, extras):
-  # não é possível adicionar uma atividade que não possui descrição.
-  if descricao  == '':
+# Valida que a data ou a hora contém apenas dígitos, desprezando espaços
+# extras no início e no fim.
+def soDigitos(numero) :
+  if type(numero) != str :
     return False
-  else:
-    data, hora, pri, contexto, projeto = checaAtributos(extras)[:5]
-    novaAtividade = ' '.join([data, hora, pri, descricao, contexto, projeto])
-    novaAtividade = ' '.join(novaAtividade.split()) # Remove espaços duplos
-    # Escreve no TODO_FILE.
-    try:
-      fp = open(TODO_FILE, 'a')
-      fp.write(novaAtividade + "\n")
-      fp.close()
-    except IOError as err:
-      print("Não foi possível escrever para o arquivo " + TODO_FILE)
-      print(err)
+  for x in numero :
+    if x < '0' or x > '9' :
       return False
-    return True
+  return True
 
 # Valida a prioridade.
 def prioridadeValida(pri):
@@ -101,35 +100,7 @@ def projetoValido(proj):
 def contextoValido(cont):
   return ((len(cont) > 1) and (cont[0] == '@'))
 
-# Valida que a data ou a hora contém apenas dígitos, desprezando espaços
-# extras no início e no fim.
-def soDigitos(numero) :
-  if type(numero) != str :
-    return False
-  for x in numero :
-    if x < '0' or x > '9' :
-      return False
-  return True
-
-def organizar(linhas):
-  itens = []
-  for l in linhas:
-    l = l.strip() # remove espaços em branco e quebras de linha do começo e do fim
-    tokens = l.split() # quebra o string em palavras
-    data, hora, pri, contexto, projeto, desc = checaAtributos(tokens)
-    itens.append((desc, (data, hora, pri, contexto, projeto)))
-  return itens
-
-def ler(arquivo):
-  try:
-    fp = open(arquivo, 'r', encoding="utf-8")
-    linhas = fp.readlines()
-    fp.close()
-  except IOError as err:
-    print("Não foi possível ler o arquivo " + arquivo)
-    print(err)
-    return False
-  return linhas
+# MANIPULAÇÕES DIVERSAS:
 
 def formataData(data):
   dataFormatada = ''
@@ -165,28 +136,9 @@ def colore(prioridade):
       cor = RESET
     return cor
 
-def listar():
-  linhas = ler(TODO_FILE)
-  linhas = organizar(linhas)
-  linhas = ordenarPorDataHora(linhas)
-  linhas = ordenarPorPrioridade(linhas)
-  # Imprime cada linha de forma ordenada, numerada e colorida
-  lstOrdenada = []
-  i = 0
-  while i < len(linhas):
-    l = linhas[i]
-    desc = l[0]
-    data = formataData(l[1][0])
-    hora = formataHora(l[1][1])
-    pri = l[1][2].upper()
-    cont = l[1][3]
-    proj = l[1][4]
-    cor = colore(pri)
-    linha = ' '.join([data, hora, pri, desc, cont, proj])
-    linha = ' '.join(linha.split()) # para remover espaços duplos
-    lstOrdenada.append(linha)
-    printCores(linha, cor)
-    i += 1
+# printCores('Oi mundo!', RED)
+def printCores(texto, cor) :
+  print(cor + texto + RESET)
 
 # converte uma data e hora do formato 'ddmmaaaa', 'hhmm' para um inteiro aaaammddhhmm
 def dataHoraInt(data, hora):
@@ -202,6 +154,16 @@ def dataHoraInt(data, hora):
   else:
     horaInteiro = hora
   return int(dataInteiro + horaInteiro)
+
+# ORDENAÇÕES:
+def organizar(linhas):
+  itens = []
+  for l in linhas:
+    l = l.strip() # remove espaços em branco e quebras de linha do começo e do fim
+    tokens = l.split() # quebra o string em palavras
+    data, hora, pri, contexto, projeto, desc = checaAtributos(tokens)
+    itens.append((desc, (data, hora, pri, contexto, projeto)))
+  return itens
 
 # Recebe uma lista de tuplas no formato [(n, 'item'),...] e ordena os itens de acordo com n
 def quickSortPorChave(lista):
@@ -251,18 +213,59 @@ def ordenarPorPrioridade(itens):
     i += 1
   return listaOrdenada
 
-def fazer(num):
-  return
+# FUNCIONALIDADES:
+def adicionar(descricao, extras):
+  # não é possível adicionar uma atividade que não possui descrição.
+  if descricao  == '':
+    return False
+  else:
+    data, hora, pri, contexto, projeto = checaAtributos(extras)[:5]
+    novaAtividade = ' '.join([data, hora, pri, descricao, contexto, projeto])
+    novaAtividade = ' '.join(novaAtividade.split()) # Remove espaços duplos
+    # Escreve no TODO_FILE.
+    try:
+      fp = open(TODO_FILE, 'a')
+      fp.write(novaAtividade + "\n")
+      fp.close()
+    except IOError as err:
+      print("Não foi possível escrever para o arquivo " + TODO_FILE)
+      print(err)
+      return False
+    return True
+
+def listar():
+  linhas = ler(TODO_FILE)
+  linhas = organizar(linhas)
+  linhas = ordenarPorDataHora(linhas)
+  linhas = ordenarPorPrioridade(linhas)
+  # Imprime cada linha de forma ordenada, numerada e colorida
+  lstOrdenada = []
+  i = 0
+  while i < len(linhas):
+    l = linhas[i]
+    desc = l[0]
+    data = formataData(l[1][0])
+    hora = formataHora(l[1][1])
+    pri = l[1][2].upper()
+    cont = l[1][3]
+    proj = l[1][4]
+    cor = colore(pri)
+    linha = ' '.join([data, hora, pri, desc, cont, proj])
+    linha = ' '.join(linha.split()) # para remover espaços duplos
+    lstOrdenada.append(linha)
+    printCores(linha, cor)
+    i += 1
 
 def remover(num):
   return
 
-# prioridade é uma letra entre A a Z, onde A é a mais alta e Z a mais baixa.
-# num é o número da atividade cuja prioridade se planeja modificar, conforme
-# exibido pelo comando 'l'.
+def fazer(num):
+  return
+
 def priorizar(num, prioridade):
   return
 
+# FUNÇÃO PRINCIPAL:
 def processarComandos(comandos) :
   if comandos[1] == ADICIONAR:
     comandos.pop(0) # remove 'agenda.py'
