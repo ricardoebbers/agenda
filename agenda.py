@@ -3,12 +3,11 @@ import sys
 TODO_FILE = 'todo.txt'
 ARCHIVE_FILE = 'done.txt'
 
-RED   = "\033[1;31m"  
-BLUE  = "\033[1;34m"
-CYAN  = "\033[1;36m"
+RED = "\033[1;31m"
+BLUE = "\033[0;34m"
+CYAN = "\033[0;36m"
 GREEN = "\033[0;32m"
 RESET = "\033[0;0m"
-BOLD    = "\033[;1m"
 REVERSE = "\033[;7m"
 YELLOW = "\033[0;33m"
 
@@ -22,29 +21,31 @@ LISTAR = 'l'
 def printCores(texto, cor) :
   print(cor + texto + RESET)
 
+def checaAtributos(lista):
+  data, hora, pri, contexto, projeto, desc = ['' for x in range(6)]
+  for x in lista:
+    if dataValida(x):
+      data = x
+    elif horaValida(x):
+      hora = x
+    elif prioridadeValida(x):
+      pri = x
+    elif contextoValido(x):
+      contexto = x
+    elif projetoValido(x):
+      projeto = x
+    else:
+      desc = ' '.join([desc, x])
+
+  return (data, hora, pri, contexto, projeto, desc)
+
+
 def adicionar(descricao, extras):
-  # não é possível adicionar uma atividade que não possui descrição. 
+  # não é possível adicionar uma atividade que não possui descrição.
   if descricao  == '':
     return False
   else:
-    data = ''
-    hora = ''
-    pri = ''
-    contexto = ''
-    projeto = ''
-    novaAtividade = ''
-    # Checa se cada parte extra é um atributo válido 
-    for e in extras:
-      if dataValida(e):
-        data = e
-      elif horaValida(e):
-        hora = e
-      elif prioridadeValida(e):
-        pri = e
-      elif contextoValido(e):
-        contexto = e
-      elif projetoValido(e):
-        projeto = e
+    data, hora, pri, contexto, projeto = checaAtributos(extras)[:5]
     novaAtividade = ' '.join([data, hora, pri, descricao, contexto, projeto])
     novaAtividade = ' '.join(novaAtividade.split()) # Remove espaços duplos
     # Escreve no TODO_FILE.
@@ -61,9 +62,7 @@ def adicionar(descricao, extras):
 # Valida a prioridade.
 def prioridadeValida(pri):
   alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  if (len(pri) == 3) and (pri[0] == '(') and (pri[1].upper() in alfabeto) and (pri[2] == ')'):
-    return True
-  return False
+  return ((len(pri) == 3) and (pri[0] == '(') and (pri[1].upper() in alfabeto) and (pri[2] == ')'))
 
 # Valida a hora. Consideramos que o dia tem 24 horas, como no Brasil, ao invés
 # de dois blocos de 12 (AM e PM), como nos EUA.
@@ -79,7 +78,7 @@ def horaValida(horaMin) :
 
 # Valida datas. Verificar inclusive se não estamos tentando
 # colocar 31 dias em fevereiro. Não precisamos nos certificar, porém,
-# de que um ano é bissexto. 
+# de que um ano é bissexto.
 def dataValida(data):
   mes30 = [4, 6, 9, 11]
   if len(data) != 8 or not soDigitos(data):
@@ -94,17 +93,13 @@ def dataValida(data):
       return False
     return True
 
-# Valida que o string do projeto está no formato correto. 
+# Valida que o string do projeto está no formato correto.
 def projetoValido(proj):
-  if (len(proj) > 1) and (proj[0] == '+'):
-    return True
-  return False
+  return ((len(proj) > 1) and (proj[0] == '+'))
 
-# Valida que o string do contexto está no formato correto. 
+# Valida que o string do contexto está no formato correto.
 def contextoValido(cont):
-  if (len(cont) > 1) and (cont[0] == '@'):
-    return True
-  return False
+  return ((len(cont) > 1) and (cont[0] == '@'))
 
 # Valida que a data ou a hora contém apenas dígitos, desprezando espaços
 # extras no início e no fim.
@@ -119,27 +114,9 @@ def soDigitos(numero) :
 def organizar(linhas):
   itens = []
   for l in linhas:
-    data = ''
-    hora = ''
-    pri = ''
-    desc = ''
-    contexto = ''
-    projeto = ''
     l = l.strip() # remove espaços em branco e quebras de linha do começo e do fim
     tokens = l.split() # quebra o string em palavras
-    for t in tokens:
-      if prioridadeValida(t):
-        pri = t
-      elif horaValida(t):
-        hora = t
-      elif dataValida(t):
-        data = t
-      elif projetoValido(t):
-        projeto = t
-      elif contextoValido(t):
-        contexto = t
-      else:
-        desc = ' '.join([desc, t])
+    data, hora, pri, contexto, projeto, desc = checaAtributos(tokens)
     itens.append((desc, (data, hora, pri, contexto, projeto)))
   return itens
 
@@ -177,15 +154,17 @@ def colore(prioridade):
   else:
     letra = prioridade[1]
     if letra == 'A':
-      cor = YELLOW
+      cor = RED
     elif letra == 'B':
       cor = BLUE
     elif letra == 'C':
       cor = CYAN
     elif letra == 'D':
       cor = GREEN
-  return cor
-    
+    else:
+      cor = RESET
+    return cor
+
 def listar():
   linhas = ler(TODO_FILE)
   linhas = organizar(linhas)
@@ -209,8 +188,6 @@ def listar():
     printCores(linha, cor)
     i += 1
 
-  return lstOrdenada
-
 # converte uma data e hora do formato 'ddmmaaaa', 'hhmm' para um inteiro aaaammddhhmm
 def dataHoraInt(data, hora):
   if data == '':
@@ -227,22 +204,19 @@ def dataHoraInt(data, hora):
   return int(dataInteiro + horaInteiro)
 
 # Recebe uma lista de tuplas no formato [(n, 'item'),...] e ordena os itens de acordo com n
-def bubbleSortPorChave(lista):
-  desordenado = True
-  iteracao = len(lista) -1
-  while iteracao > 0 and desordenado:
-    desordenado = False
-    for i in range(iteracao):
-      if lista[i][0] > lista[i+1][0]:
-        lista[i], lista[i+1] = lista[i+1], lista[i]
-        desordenado = True
-    iteracao -= 1
-  # Remove o numero usado para ordenar
-  i = 0
-  while i < len(lista):
-    lista[i] = lista[i][1]
-    i += 1
-  return lista
+def quickSortPorChave(lista):
+  if lista == []:
+    return []
+  else:
+    pivo = lista.pop(0)
+    maiores = []
+    menores = []
+    for x in lista:
+      if x[0] >= pivo[0]:
+        maiores.append(x)
+      else:
+        menores.append(x)
+    return quickSortPorChave(menores) + [pivo] + quickSortPorChave(maiores)
 
 def ordenarPorDataHora(itens):
   dataseItens = []
@@ -251,9 +225,13 @@ def ordenarPorDataHora(itens):
     data = str(lin[1][0])
     hora = str(lin[1][1])
     dataHora = dataHoraInt(data, hora)
-    item = (dataHora, lin)
+    item = (dataHora, lin) # Cria uma tupla com o número ordenador e os objetos da linha
     dataseItens.append(item)
-  listaOrdenada = bubbleSortPorChave(dataseItens)
+  listaOrdenada = quickSortPorChave(dataseItens)
+  i = 0
+  while i < len(listaOrdenada):
+    listaOrdenada[i] = listaOrdenada[i][1]
+    i += 1
   return listaOrdenada
 
 def ordenarPorPrioridade(itens):
@@ -266,26 +244,32 @@ def ordenarPorPrioridade(itens):
       letra = pri[1].upper() # Extrai apenas a letra de '(L)'
     item = (letra, linha)
     prieItens.append(item)
-  listaOrdenada = bubbleSortPorChave(prieItens)
+  listaOrdenada = quickSortPorChave(prieItens)
+  i = 0
+  while i < len(listaOrdenada):
+    listaOrdenada[i] = listaOrdenada[i][1]
+    i += 1
   return listaOrdenada
 
 def fazer(num):
-  return 
+  return
 
 def remover(num):
   return
 
 # prioridade é uma letra entre A a Z, onde A é a mais alta e Z a mais baixa.
 # num é o número da atividade cuja prioridade se planeja modificar, conforme
-# exibido pelo comando 'l'. 
+# exibido pelo comando 'l'.
 def priorizar(num, prioridade):
-  return 
+  return
 
 def processarComandos(comandos) :
   if comandos[1] == ADICIONAR:
     comandos.pop(0) # remove 'agenda.py'
     comandos.pop(0) # remove 'a'
-    itemParaAdicionar = organizar([' '.join(comandos)])[0]
+    print(comandos)
+    itemParaAdicionar = organizar([' '.join(comandos)])[0] # recebe uma string separada por espaços
+    print(itemParaAdicionar)
     adicionar(itemParaAdicionar[0], itemParaAdicionar[1]) # (descricao, (data, hora, pri, contexto, projeto))
   elif comandos[1] == LISTAR:
     listar()
