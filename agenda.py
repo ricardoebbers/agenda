@@ -270,9 +270,7 @@ def processarComandos(comandos) :
   if comandos[1] == ADICIONAR:
     comandos.pop(0) # remove 'agenda.py'
     comandos.pop(0) # remove 'a'
-    print(comandos)
     itemParaAdicionar = organizar([' '.join(comandos)])[0] # recebe uma string separada por espaços
-    print(itemParaAdicionar)
     adicionar(itemParaAdicionar[0], itemParaAdicionar[1]) # (descricao, (data, hora, pri, contexto, projeto))
   elif comandos[1] == LISTAR:
     listar()
@@ -285,4 +283,4 @@ def processarComandos(comandos) :
   else :
     print("Comando inválido.")
 
-#processarComandos(sys.argv) # sys.argv = ['agenda.py', 'a', 'Mudar', 'de', 'nome']
+processarComandos(sys.argv) # sys.argv = ['agenda.py', 'a', 'Mudar', 'de', 'nome']
