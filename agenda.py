@@ -183,7 +183,6 @@ def projetoValido(proj):
 def contextoValido(cont):
   return ((len(cont) > 1) and (cont[0] == '@'))
 
-
 ''' ORDENAÇÕES '''
 def organizar(linhas):
   itens = []
@@ -287,7 +286,6 @@ def fazer(num):
 def priorizar(num, prioridade):
   return
 
-''' FUNÇÃO PRINCIPAL '''
 def processarComandos(cmd) :
   if cmd[1] == ADICIONAR:
     cmd.pop(0) # Remove 'agenda.py'
