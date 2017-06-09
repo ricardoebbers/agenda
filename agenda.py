@@ -21,7 +21,7 @@ LISTAR = 'l'
 # Função genérica para ler um arquivo existente.
 def lerArquivo(arquivo):
   try:
-    fp = open(arquivo, 'r', encoding="utf-8")
+    fp = open(arquivo, 'r')#, encoding="utf-8")
     linhas = fp.readlines()
     fp.close()
   except IOError as err:
@@ -194,7 +194,7 @@ def organizar(linhas):
   return itens
 
 # Quicksort recursivo para ordenar uma lista de tuplas
-# no formato [(n, (objeto))...] por 'n'
+# no formato [(n, (numLin, (objeto)))...] por 'n'
 def quickSortPorChave(lista):
   if lista == []:
     return []
@@ -212,11 +212,11 @@ def quickSortPorChave(lista):
 def ordenarPorDataHora(itens):
   # Cria temporariamente uma lista de tuplas (ordenador, (atributos))
   dataseItens = []
-  for lin in itens: # (desc, (data, hora, pri, cont, projeto))
-    data = str(lin[1][0])
-    hora = str(lin[1][1])
+  for x in itens: # (numLinha, (desc, (data, hora, pri, cont, projeto)))
+    data = str(x[1][1][0])
+    hora = str(x[1][1][1])
     dataHora = dataHoraInt(data, hora) # Inteiro no formato AAAAMMDDHHmm
-    item = (dataHora, lin) # Cria uma tupla com o ordenador e os objetos
+    item = (dataHora, x) # (dataHora, (numLinha, (desc, (data, hora, (...)))))
     dataseItens.append(item)
   dataseItens = quickSortPorChave(dataseItens)
   # Remove o objeto ordenador da lista final
@@ -226,13 +226,13 @@ def ordenarPorDataHora(itens):
 def ordenarPorPrioridade(itens):
   # Cria temporariamente uma lista de tuplas (ordenador, (atributos))
   prieItens = []
-  for linha in itens:
-    pri = linha[1][2] # (desc,(data,hora,"pri",(...))
+  for x in itens:
+    pri = x[1][1][2] # (numLinha, (desc,(data,hora,"pri",(...)))
     if pri == '':
       letra = 'Z' # No caso de não haver prioridade definida
     else:
       letra = pri[1].upper() # Extrai apenas a letra de '("X")'
-    item = (letra, linha) # A letra, nesse caso, é o objeto ordenador
+    item = (letra, x) # (letra, (numLinha, (desc, (data, hora, (...)))))
     prieItens.append(item)
   prieItens = quickSortPorChave(prieItens)
   # Remove o objeto ordenador da lista final
@@ -259,12 +259,19 @@ def adicionar(descricao, extras):
 def listar():
   lin = lerArquivo(TODO_FILE) # ['texto linha 1\n', 'texto linha 2\n', (...)]
   lin = organizar(lin) # ['('desc', ('attr1','attr2', (...)))', (...)]
-  lin = ordenarPorDataHora(lin) # Lista de tuplas ordenada por data e hora
-  lin = ordenarPorPrioridade(lin) # Lista anterior ordenada por prioridade
+  # Laço para anexar o número da linha no arquivo à linha
+  linEnumLin = []
+  n = 1
+  for l in lin:
+    linEnumLin.append((n, l)) #(n, ('desc', ('attr1', 'attr2', ...)))
+    n += 1
+  linEnumLin = ordenarPorDataHora(linEnumLin) # Lista de tuplas ordenada por data e hora
+  linEnumLin = ordenarPorPrioridade(linEnumLin) # Lista anterior ordenada por prioridade
   # Formata e imprime, uma a uma, as linhas do TODO_FILE
   i = 0
-  while i < len(lin):
-    l = lin[i] # Para simplificar as demais linhas
+  while i < len(linEnumLin):
+    num = str(linEnumLin[i][0])
+    l = linEnumLin[i][1] # Para simplificar as demais linhas
     desc = l[0]
     data = formataData(l[1][0]) # 'dd/mm/aaaa'
     hora = formataHora(l[1][1]) # 'hh:mm'
@@ -272,7 +279,7 @@ def listar():
     cont = l[1][3]
     proj = l[1][4]
     cor = colore(pri) # Colore de acordo com a prioridade
-    linha = ' '.join([data, hora, pri, desc, cont, proj])
+    linha = ' '.join([num, data, hora, pri, desc, cont, proj])
     linha = ' '.join(linha.split()) # Remove espaços duplos
     printCores(linha, cor)
     i += 1
