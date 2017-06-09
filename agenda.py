@@ -17,7 +17,9 @@ FAZER = 'f'
 PRIORIZAR = 'p'
 LISTAR = 'l'
 
-def ler(arquivo):
+''' MANIPULAÇÕES DIVERSAS '''
+# Função genérica para ler um arquivo existente.
+def lerArquivo(arquivo):
   try:
     fp = open(arquivo, 'r', encoding="utf-8")
     linhas = fp.readlines()
@@ -28,8 +30,86 @@ def ler(arquivo):
     return False
   return linhas
 
-# VALIDAÇÃO DE ATRIBUTOS:
-# Checagem de Atributos:
+# Função genérica para adicionar texto a um arquivo existente
+def escreverArquivo(texto, arquivo):
+  try:
+    fp = open(arquivo, 'a')
+    fp.write(texto + "\n")
+    fp.close()
+  except IOError as err:
+    print("Não foi possível escrever para o arquivo " + arquivo)
+    print(err)
+    return False
+
+# Função auxiliar à listagem, pega uma data no formato 'DDMMAAAA'
+# e transforma em 'DD/MM/AAAA'
+def formataData(data):
+  dataFormatada = ''
+  if data != '':
+    dia = data[:2]
+    mes = data[2:4]
+    ano = data[4:]
+    dataFormatada = '/'.join([dia, mes, ano])
+  return dataFormatada
+
+# Função auxiliar à listagem, pega um horário no formato 'HHmm'
+# e transforma em 'HH:mm'
+def formataHora(horario):
+  horaFormatada = ''
+  if horario != '':
+    hora = horario[:2]
+    minuto = horario[2:]
+    horaFormatada = ':'.join([hora, minuto])
+  return horaFormatada
+
+# Paleta de cores de acordo com a prioridade
+def colore(prioridade):
+  if prioridade == '':
+    return RESET
+  else:
+    letra = prioridade[1]
+    if letra == 'A':
+      cor = RED
+    elif letra == 'B':
+      cor = BLUE
+    elif letra == 'C':
+      cor = CYAN
+    elif letra == 'D':
+      cor = GREEN
+    else:
+      cor = RESET
+  return cor
+
+# PrintCores('Oi mundo!', RED)
+def printCores(texto, cor) :
+  print(cor + texto + RESET)
+
+# Converte uma data e hora do formato 'DDMMAAAA' e 'HHmm' para um inteiro AAAAMMDDHHmm
+def dataHoraInt(data, hora):
+  if data == '':
+    dataInteiro = '99999999'
+  else:
+    ano = data[4:]
+    mes = data[2:4]
+    dia = data[:2]
+    dataInteiro = ano + mes + dia
+  if hora == '':
+    horaInteiro = '9999'
+  else:
+    horaInteiro = hora
+  return int(dataInteiro + horaInteiro)
+
+# Função que transforma uma tupla (ordenador, (objetos)) em (objetos)
+def removeOrdenador(lista):
+  i = 0
+  while i < len(lista):
+    lista[i] = lista[i][1]
+    i += 1
+  return lista
+
+''' VALIDAÇÃO DE ATRIBUTOS '''
+# Função que chama as demais funções de validação.
+# Se não for um atributo válido então anexa à descrição
 def checaAtributos(lista):
   data, hora, pri, contexto, projeto, desc = ['' for x in range(6)]
   for x in lista:
@@ -45,7 +125,6 @@ def checaAtributos(lista):
       projeto = x
     else:
       desc = ' '.join([desc, x])
-
   return (data, hora, pri, contexto, projeto, desc)
 
 # Valida que a data ou a hora contém apenas dígitos, desprezando espaços
@@ -100,62 +179,8 @@ def projetoValido(proj):
 def contextoValido(cont):
   return ((len(cont) > 1) and (cont[0] == '@'))
 
-# MANIPULAÇÕES DIVERSAS:
 
-def formataData(data):
-  dataFormatada = ''
-  if data != '':
-    dia = data[:2]
-    mes = data[2:4]
-    ano = data[4:]
-    dataFormatada = '/'.join([dia, mes, ano])
-  return dataFormatada
-
-def formataHora(horario):
-  horaFormatada = ''
-  if horario != '':
-    hora = horario[:2]
-    minuto = horario[2:]
-    horaFormatada = ':'.join([hora, minuto])
-  return horaFormatada
-
-def colore(prioridade):
-  if prioridade == '':
-    return RESET
-  else:
-    letra = prioridade[1]
-    if letra == 'A':
-      cor = RED
-    elif letra == 'B':
-      cor = BLUE
-    elif letra == 'C':
-      cor = CYAN
-    elif letra == 'D':
-      cor = GREEN
-    else:
-      cor = RESET
-    return cor
-
-# printCores('Oi mundo!', RED)
-def printCores(texto, cor) :
-  print(cor + texto + RESET)
-
-# converte uma data e hora do formato 'ddmmaaaa', 'hhmm' para um inteiro aaaammddhhmm
-def dataHoraInt(data, hora):
-  if data == '':
-    dataInteiro = '99999999'
-  else:
-    ano = data[4:]
-    mes = data[2:4]
-    dia = data[:2]
-    dataInteiro = ano + mes + dia
-  if hora == '':
-    horaInteiro = '9999'
-  else:
-    horaInteiro = hora
-  return int(dataInteiro + horaInteiro)
-
-# ORDENAÇÕES:
+''' ORDENAÇÕES '''
 def organizar(linhas):
   itens = []
   for l in linhas:
@@ -165,94 +190,85 @@ def organizar(linhas):
     itens.append((desc, (data, hora, pri, contexto, projeto)))
   return itens
 
-# Recebe uma lista de tuplas no formato [(n, 'item'),...] e ordena os itens de acordo com n
+# Quicksort recursivo para ordenar uma lista de tuplas no formato [(n, (objeto))...] por 'n'
 def quickSortPorChave(lista):
   if lista == []:
     return []
   else:
-    pivo = lista.pop(0)
+    pivo = lista.pop(0) # O pivô tem que ser toda a tupla (n, (objeto))
     maiores = []
     menores = []
     for x in lista:
-      if x[0] >= pivo[0]:
+      if x[0] >= pivo[0]: # Apenas a condicional precisa levar em conta o 'n'
         maiores.append(x)
       else:
         menores.append(x)
     return quickSortPorChave(menores) + [pivo] + quickSortPorChave(maiores)
 
 def ordenarPorDataHora(itens):
+  # Cria temporariamente uma lista de tuplas (ordenador, (atributos))
   dataseItens = []
-  # Cria uma lista que contém um número inteiro derivado da data, seguindo o modelo YYYYMMAAHHmm
-  for lin in itens: # l = (desc, (data, hora, pri, cont, projeto))
+  for lin in itens: # (desc, (data, hora, pri, cont, projeto))
     data = str(lin[1][0])
     hora = str(lin[1][1])
-    dataHora = dataHoraInt(data, hora)
+    dataHora = dataHoraInt(data, hora) # Inteiro no formato AAAAMMDDHHmm
     item = (dataHora, lin) # Cria uma tupla com o número ordenador e os objetos da linha
     dataseItens.append(item)
-  listaOrdenada = quickSortPorChave(dataseItens)
-  i = 0
-  while i < len(listaOrdenada):
-    listaOrdenada[i] = listaOrdenada[i][1]
-    i += 1
+  dataseItens = quickSortPorChave(dataseItens)
+  # Remove o objeto ordenador da lista final
+  listaOrdenada = removeOrdenador(dataseItens)
   return listaOrdenada
 
 def ordenarPorPrioridade(itens):
+  # Cria temporariamente uma lista de tuplas (ordenador, (atributos))
   prieItens = []
   for linha in itens:
-    pri = linha[1][2]
-    if pri == '': # No caso de não haver prioridade será atribuída a menor possível
-      letra = 'Z'
+    pri = linha[1][2] # (desc,(data,hora,"pri",(...))
+    if pri == '':
+      letra = 'Z' # No caso de não haver prioridade será atribuída a menor possível
     else:
-      letra = pri[1].upper() # Extrai apenas a letra de '(L)'
-    item = (letra, linha)
+      letra = pri[1].upper() # Extrai apenas a letra de '("X")'
+    item = (letra, linha) # A letra, nesse caso, é o objeto ordenador
     prieItens.append(item)
-  listaOrdenada = quickSortPorChave(prieItens)
-  i = 0
-  while i < len(listaOrdenada):
-    listaOrdenada[i] = listaOrdenada[i][1]
-    i += 1
+  prieItens = quickSortPorChave(prieItens)
+  # Remove o objeto ordenador da lista final
+  listaOrdenada = removeOrdenador(prieItens)
   return listaOrdenada
 
-# FUNCIONALIDADES:
+''' FUNCIONALIDADES '''
 def adicionar(descricao, extras):
-  # não é possível adicionar uma atividade que não possui descrição.
+  # Não é possível adicionar uma atividade que não possui descrição.
   if descricao  == '':
     return False
   else:
+    # Faz todas as checagens necessárias dos atributos
     data, hora, pri, contexto, projeto = checaAtributos(extras)[:5]
+    # Como a atividade será escrita no TODO_FILE, cria uma string dos atributos
     novaAtividade = ' '.join([data, hora, pri, descricao, contexto, projeto])
-    novaAtividade = ' '.join(novaAtividade.split()) # Remove espaços duplos
+    novaAtividade = ' '.join(novaAtividade.split()) # Remove espaços duplos causados por atributos vazios
     # Escreve no TODO_FILE.
-    try:
-      fp = open(TODO_FILE, 'a')
-      fp.write(novaAtividade + "\n")
-      fp.close()
-    except IOError as err:
-      print("Não foi possível escrever para o arquivo " + TODO_FILE)
-      print(err)
-      return False
+    escreverArquivo(novaAtividade, TODO_FILE)
     return True
 
+# Função que lista todas as linhas no arquivo TODO_FILE coloridas por prioridade e ordenadas
 def listar():
-  linhas = ler(TODO_FILE)
-  linhas = organizar(linhas)
-  linhas = ordenarPorDataHora(linhas)
-  linhas = ordenarPorPrioridade(linhas)
-  # Imprime cada linha de forma ordenada, numerada e colorida
-  lstOrdenada = []
+  linhas = lerArquivo(TODO_FILE) # Retorna ['texto linha 1\n', 'texto linha 2\n', (...)]
+  linhas = organizar(linhas) # Retorna ['('desc', ('attr1','attr2', (...)))', (...)]
+  linhas = ordenarPorDataHora(linhas) # Retorna a lista de tuplas acima ordenada por data e hora
+  linhas = ordenarPorPrioridade(linhas) # Retorna o resultado anterior ordenado por prioridade
+  # Formata e imprime, uma a uma, as linhas do TODO_FILE
   i = 0
   while i < len(linhas):
-    l = linhas[i]
+    l = linhas[i] # Para simplificar as demais linhas
     desc = l[0]
-    data = formataData(l[1][0])
-    hora = formataHora(l[1][1])
+    data = formataData(l[1][0]) # 'dd/mm/aaaa'
+    hora = formataHora(l[1][1]) # 'hh:mm'
     pri = l[1][2].upper()
     cont = l[1][3]
     proj = l[1][4]
-    cor = colore(pri)
+    cor = colore(pri) # Colore de acordo com a prioridade
     linha = ' '.join([data, hora, pri, desc, cont, proj])
-    linha = ' '.join(linha.split()) # para remover espaços duplos
-    lstOrdenada.append(linha)
+    linha = ' '.join(linha.split()) # Remove espaços duplos causados por atributos vazios
     printCores(linha, cor)
     i += 1
 
@@ -265,15 +281,15 @@ def fazer(num):
 def priorizar(num, prioridade):
   return
 
-# FUNÇÃO PRINCIPAL:
+''' FUNÇÃO PRINCIPAL '''
 def processarComandos(comandos) :
   if comandos[1] == ADICIONAR:
-    comandos.pop(0) # remove 'agenda.py'
-    comandos.pop(0) # remove 'a'
-    itemParaAdicionar = organizar([' '.join(comandos)])[0] # recebe uma string separada por espaços
+    comandos.pop(0) # Remove 'agenda.py'
+    comandos.pop(0) # Remove 'a'
+    itemParaAdicionar = organizar([' '.join(comandos)])[0] # Recebe uma string separada por espaços
     adicionar(itemParaAdicionar[0], itemParaAdicionar[1]) # (descricao, (data, hora, pri, contexto, projeto))
   elif comandos[1] == LISTAR:
-    listar()
+    listar() # Apenas imprime na tela a lista formatada de acordo com as especificações
   elif comandos[1] == REMOVER:
     return
   elif comandos[1] == FAZER:
