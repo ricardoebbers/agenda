@@ -18,7 +18,6 @@ PRIORIZAR = 'p'
 LISTAR = 'l'
 
 ''' MANIPULAÇÕES DIVERSAS '''
-# Função genérica para ler um arquivo existente.
 def lerArquivo(arquivo):
     try:
         fp = open(arquivo, 'r')#, encoding="utf-8")
@@ -30,7 +29,6 @@ def lerArquivo(arquivo):
         return False
     return linhas
 
-# Função genérica para adicionar texto a um arquivo existente
 def escreverArquivo(texto, arquivo):
     try:
         fp = open(arquivo, 'a')
@@ -38,6 +36,18 @@ def escreverArquivo(texto, arquivo):
         fp.close()
     except IOError as err:
         print("Não foi possível escrever para o arquivo " + arquivo)
+        print(err)
+        return False
+
+def atualizarArquivo(lista, arquivo):
+    try:
+        fp = open(arquivo, 'w+')
+        fp.seek(0)
+        for x in lista:
+            fp.write(x)
+        fp.close()
+    except IOError as err:
+        print("Não foi possível atualizar o arquivo " + arquivo)
         print(err)
         return False
 
@@ -135,8 +145,8 @@ def soDigitos(numero) :
     if type(numero) != str :
         return False
     for x in numero :
-    if x < '0' or x > '9' :
-        return False
+        if x < '0' or x > '9' :
+            return False
     return True
 
 # Valida a prioridade.
@@ -202,8 +212,8 @@ def quickSortPorChave(lista):
         pivo = lista.pop(0) # O pivô tem que ser toda a tupla (n, (objeto))
         maiores = []
         menores = []
-        for x in lista:
-            if x[0] >= pivo[0]: # Apenas a condicional precisa levar em conta o 'n'
+        for x in lista: # Apenas a condicional precisa levar em conta o 'n'
+            if x[0] >= pivo[0]: 
                 maiores.append(x)
             else:
                 menores.append(x)
@@ -216,7 +226,7 @@ def ordenarPorDataHora(itens):
         data = str(x[1][1][0])
         hora = str(x[1][1][1])
         dataHora = dataHoraInt(data, hora) # Inteiro no formato AAAAMMDDHHmm
-        item = (dataHora, x) # (dataHora, (numLinha, (desc, (data, hora, (...)))))
+        item = (dataHora, x) # (dataHora, (numLinha, (desc, (data, hora, (...)
         dataseItens.append(item)
     dataseItens = quickSortPorChave(dataseItens)
     # Remove o objeto ordenador da lista final
@@ -232,8 +242,8 @@ def ordenarPorPrioridade(itens):
             letra = 'Z' # No caso de não haver prioridade definida
         else:
             letra = pri[1].upper() # Extrai apenas a letra de '("X")'
-    item = (letra, x) # (letra, (numLinha, (desc, (data, hora, (...)))))
-    prieItens.append(item)
+        item = (letra, x) # (letra, (numLinha, (desc, (data, hora, (...)))))
+        prieItens.append(item)
     prieItens = quickSortPorChave(prieItens)
     # Remove o objeto ordenador da lista final
     listaOrdenada = removeOrdenador(prieItens)
@@ -242,13 +252,13 @@ def ordenarPorPrioridade(itens):
 ''' FUNCIONALIDADES '''
 def adicionar(descricao, extras):
     # Não é possível adicionar uma atividade que não possui descrição.
-    if descricao  == '':
+    if desc  == '':
         return False
     else:
         # Faz todas as checagens necessárias dos atributos
         data, hora, pri, contexto, projeto = checaAtributos(extras)[:5]
-        # Como a atividade será escrita no TODO_FILE, cria uma string dos atributos
-        novaAtividade = ' '.join([data, hora, pri, descricao, contexto, projeto])
+        # Cria uma string dos atributos
+        novaAtividade = ' '.join([data, hora, pri, desc, contexto, projeto])
         novaAtividade = ' '.join(novaAtividade.split()) # Remove espaços duplos
         # Escreve no TODO_FILE.
         escreverArquivo(novaAtividade, TODO_FILE)
@@ -258,19 +268,21 @@ def adicionar(descricao, extras):
 # coloridas por prioridade e ordenadas
 def listar():
     lin = lerArquivo(TODO_FILE) # ['texto linha 1\n', 'texto linha 2\n', (...)]
+    if lin == False:
+        return False # O programa falhou em ler o arquivo TODO_FILE
     lin = organizar(lin) # ['('desc', ('attr1','attr2', (...)))', (...)]
     # Laço para anexar o número da linha no arquivo às informações
     linEnumLin = []
     n = 1
-    for l in lin:
-        linEnumLin.append((n, l)) #(n, ('desc', ('attr1', 'attr2', ...)))
+    for x in lin:
+        linEnumLin.append((n, x)) #(n, ('desc', ('attr1', 'attr2', ...)))
         n += 1
-    linEnumLin = ordenarPorDataHora(linEnumLin) # Lista de tuplas ordenada por data e hora
-    linEnumLin = ordenarPorPrioridade(linEnumLin) # Lista anterior ordenada por prioridade
+    linEnumLin = ordenarPorDataHora(linEnumLin)
+    linEnumLin = ordenarPorPrioridade(linEnumLin)
     # Formata e imprime, uma a uma, as linhas do TODO_FILE
     i = 0
     while i < len(linEnumLin):
-        num = str(linEnumLin[i][0])
+        num = '{:02d}'.format(linEnumLin[i][0])
         l = linEnumLin[i][1] # Para simplificar as demais linhas
         desc = l[0]
         data = formataData(l[1][0]) # 'dd/mm/aaaa'
@@ -285,13 +297,37 @@ def listar():
         i += 1
 
 def remover(num):
-    return
+    linhas = lerArquivo(TODO_FILE)
+    removido = linhas.pop(num-1)
+    a = atualizarArquivo(linhas, TODO_FILE)
+    if a == False:
+        return False
+    return removido
 
 def fazer(num):
-    return
+    feito = remover(num).strip()
+    e = escreverArquivo(feito, ARCHIVE_FILE)
+    if e == False:
+        return False
+    return True
 
 def priorizar(num, prioridade):
-    return
+    linhas = lerArquivo(TODO_FILE)
+    linha = linhas[num-1]
+    # Laço para checar se a linha já tem uma prioridade definida
+    # Se tiver, substitui a letra. Se não, põe a prioridade no início
+    priorizado = False
+    i = 0
+    while i < len(linha)-2 and not(priorizado):
+       if linha[i] == '(' and linha[i+2] == ')':
+           linha = linha[:i+1] + prioridade.upper() + linha[i+2:]
+           priorizado = True
+       i += 1
+    if not(priorizado):
+        linha = '(' + prioridade + ') ' + linha
+    linhas[num-1] = linha
+    atualizarArquivo(linhas, TODO_FILE)
+    return True
 
 def processarComandos(cmd) :
     if len(cmd) > 1:
@@ -302,12 +338,16 @@ def processarComandos(cmd) :
             adicionar(itemParaAdicionar[0], itemParaAdicionar[1])
         elif cmd[1] == LISTAR:
             listar() # Imprime na tela a lista formatada
-        elif cmd[1] == REMOVER:
-            return
-        elif cmd[1] == FAZER:
-            return
-        elif cmd[1] == PRIORIZAR:
-            return
+        elif cmd[1] == REMOVER: # esperado ['agenda.py', 'r', 'n']
+            n = int(cmd[2])
+            remover(n)
+        elif cmd[1] == FAZER: # ['agenda.py', 'f', 'n']
+            n = int(cmd[2])
+            fazer(n)
+        elif cmd[1] == PRIORIZAR: # ['agenda.py', 'p', 'n', 'prioridade']
+            n = int(cmd[2])
+            pri = cmd[3].upper()
+            priorizar(n, pri)
         else :
             print("Comando inválido.")
 

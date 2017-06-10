@@ -1,29 +1,18 @@
-Tomar menos café +Saude
+(A) Tomar menos café +Saude
 0545 Acordar antes da função soneca +Work
 (A) 18062017 2359 Finalizar o projeto de P1 @Casa +IF968
 (B) 05062017 Startar o projeto final de ISI +IF966
 (A) 06062017 Revisar assunto da prova de Mat. Discreta +IF967
 (B) 07062017 Estudar integrais +MA026
-(C) Buscar informações sobre treino de JiuJitsu +Saude
-2230 Dormir cedo +Saude
-(D) Reler Blink
-Atualizar perfil do Linkedin
+(Z) Buscar informações sobre treino de JiuJitsu +Saude
+(Z) 2230 Dormir cedo +Saude
+(A) Reler Blink
+(A) Atualizar perfil do Linkedin
 32062017 Lembrar que meses possuem no máximo 31 dias +ProjetoP1
 30022017 Testar se fevereiro está funcionando bem +ProjetoP1
 2530 Analisar limite de 24h diárias @Casa +ProjetoP1
 Decidir se o @CIn já vale como segunda @Casa +ProjetoP1
--1500 é uma hora válida? +ProjetoP1
 (menino) é uma prioridade qualquer? +ProjetoP1
-04062017 1710 Um projeto é um projeto +OutroProjetoP1 +ProjetoP1
+(A) 04062017 1710 Um projeto é um projeto +OutroProjetoP1 +ProjetoP1
 !@#$%¨&* (A) ¹5³£¬ (B) +ProjetoP1
 12jun2017 é o dia dos namorados +ProjetoP1
-25dez é natal +ProjetoP1
-   abc   (D) /?°₢ +ProjetoP1
-"aspas" 'quebram' ""códigos?"" +ProjetoP1
-Talvez #jogos#da#velha#? +ProjetoP1
-e que tal // /n ? +ProjetoP1
-Mudar de nome
-20062017 2359 (a) dormir @casa
-20062017 2359 (a) dormir @casa
-2359 (a) 20132017 dormir @casa
-20062017 2359 (g) dormir @casa
