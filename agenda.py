@@ -51,19 +51,17 @@ def atualizarArquivo(lista, arquivo):
         print(err)
         return False
 
-# Função auxiliar à listagem, pega uma data no formato 'DDMMAAAA'
-# e transforma em 'DD/MM/AAAA'
+# Recebe uma data no formato 'DDMMAAAA' e transforma em 'DD/MM/AAAA'
 def formataData(data):
     dataFormatada = ''
     if data != '':
         dia = data[:2]
         mes = data[2:4]
         ano = data[4:]
-        dataFormatada = '/'.join([dia, mes, ano]) # 'dd/mm/aaaa'
+        dataFormatada = '/'.join([dia, mes, ano])
     return dataFormatada
 
-# Função auxiliar à listagem, pega um horário no formato 'HHmm'
-# e transforma em 'HH:mm'
+# Recebe um horário no formato 'HHmm' e transforma em 'HH:mm'
 def formataHora(horario):
     horaFormatada = ''
     if horario != '':
@@ -94,8 +92,8 @@ def colore(prioridade):
 def printCores(texto, cor) :
     print(cor + texto + RESET)
 
-# Converte uma data e hora do formato 'DDMMAAAA' e 'HHmm'
-# para um inteiro AAAAMMDDHHmm
+# Recebe data e hora no formato 'DDMMAAAA' e 'HHmm'
+# e retorna um inteiro AAAAMMDDHHmm (campos faltantes preenchidos com '9')
 def dataHoraInt(data, hora):
     if data == '':
         dataInteiro = '99999999'
@@ -125,15 +123,15 @@ def removeOrdenador(lista):
 def checaAtributos(lista):
     data, hora, pri, contexto, projeto, desc = ['' for x in range(6)]
     for x in lista:
-        if dataValida(x):
+        if dataValida(x) and data == '':
             data = x
-        elif horaValida(x):
+        elif horaValida(x) and hora == '':
             hora = x
-        elif prioridadeValida(x):
+        elif prioridadeValida(x) and pri == '':
             pri = x
-        elif contextoValido(x):
+        elif contextoValido(x) and contexto == '':
             contexto = x
-        elif projetoValido(x):
+        elif projetoValido(x) and projeto == '':
             projeto = x
         else:
             desc = ' '.join([desc, x])
@@ -250,7 +248,7 @@ def ordenarPorPrioridade(itens):
     return listaOrdenada
 
 ''' FUNCIONALIDADES '''
-def adicionar(descricao, extras):
+def adicionar(desc, extras):
     # Não é possível adicionar uma atividade que não possui descrição.
     if desc  == '':
         return False
@@ -315,7 +313,7 @@ def priorizar(num, prioridade):
     linhas = lerArquivo(TODO_FILE)
     linha = linhas[num-1]
     # Laço para checar se a linha já tem uma prioridade definida
-    # Se tiver, substitui a letra. Se não, põe a prioridade no início
+    # Se tiver, substitui a letra. Se não, põe a prioridade no início da linha
     priorizado = False
     i = 0
     while i < len(linha)-2 and not(priorizado):
