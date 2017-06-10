@@ -1,12 +1,12 @@
 (A) Tomar menos café +Saude
-0545 Acordar antes da função soneca +Work
+(C) 0545 Acordar antes da função soneca +Work
 (A) 18062017 2359 Finalizar o projeto de P1 @Casa +IF968
 (B) 05062017 Startar o projeto final de ISI +IF966
 (A) 06062017 Revisar assunto da prova de Mat. Discreta +IF967
 (B) 07062017 Estudar integrais +MA026
 (Z) Buscar informações sobre treino de JiuJitsu +Saude
-(Z) 2230 Dormir cedo +Saude
-(A) Reler Blink
+(D) 2230 Dormir cedo +Saude
+(E) Reler Blink
 (A) Atualizar perfil do Linkedin
 32062017 Lembrar que meses possuem no máximo 31 dias +ProjetoP1
 30022017 Testar se fevereiro está funcionando bem +ProjetoP1
@@ -17,6 +17,6 @@ Decidir se o @CIn já vale como segunda @Casa +ProjetoP1
 !@#$%¨&* (A) ¹5³£¬ (B) +ProjetoP1
 12jun2017 é o dia dos namorados +ProjetoP1
 @cin @casa +projetop1
-10062017 11062017 @cin @casa +projetop1
+(B) 10062017 11062017 @cin @casa +projetop1
 1234 a senha eh (umDoisTresQuatro) mas a hora eh 1436
 1436 a senha eh '1234' (umDoisTresQuatro) mas a hora eh

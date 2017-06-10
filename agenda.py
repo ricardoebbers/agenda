@@ -16,6 +16,7 @@ REMOVER = 'r'
 FAZER = 'f'
 PRIORIZAR = 'p'
 LISTAR = 'l'
+AJUDA = 'h'
 
 ''' MANIPULAÇÕES DIVERSAS '''
 def lerArquivo(arquivo):
@@ -79,7 +80,7 @@ def colore(prioridade):
         if letra == 'A':
             cor = RED
         elif letra == 'B':
-            cor = BLUE
+            cor = YELLOW
         elif letra == 'C':
             cor = CYAN
         elif letra == 'D':
@@ -293,9 +294,12 @@ def listar():
         linha = ' '.join(linha.split()) # Remove espaços duplos
         printCores(linha, cor)
         i += 1
+    return True
 
 def remover(num):
     linhas = lerArquivo(TODO_FILE)
+    if num > len(linhas):
+        return False
     removido = linhas.pop(num-1)
     a = atualizarArquivo(linhas, TODO_FILE)
     if a == False:
@@ -311,7 +315,7 @@ def fazer(num):
 
 def priorizar(num, prioridade):
     linhas = lerArquivo(TODO_FILE)
-    linha = linhas[num-1]
+    linha = linhas[num-1] # n == i-1
     # Laço para checar se a linha já tem uma prioridade definida
     # Se tiver, substitui a letra. Se não, põe a prioridade no início da linha
     priorizado = False
@@ -327,26 +331,51 @@ def priorizar(num, prioridade):
     atualizarArquivo(linhas, TODO_FILE)
     return True
 
+def ajuda():
+    print("\nFormas de uso da agenda.py: (sem aspas ou parênteses)\n\n"
+          "- Adicionar: 'python agenda.py a (atividade)' (a atividade precisa "
+         "conter ao menos um caracter).\n"
+         "- Listar: 'python agenda.py l' (O arquivo todo.txt precisa estar "
+         "presente na mesma pasta que o agenda.py).\n"
+         "- Remover: 'python agenda.py r (n)' (n deve ser o número da linha "
+         "da atividade a remover).\n"
+         "- Fazer: 'python agenda.py f (n)' (n deve ser o número da linha "
+         "da atividade a fazer).\n"
+         "- Priorizar: 'python agenda.py p (n) (l)' (n deve ser o número "
+         "da linha a priorizar, l deve ser uma letra entre A-Z).\n")
+    return True
+
 def processarComandos(cmd) :
     if len(cmd) > 1:
         if cmd[1] == ADICIONAR:
             cmd.pop(0) # Remove 'agenda.py'
             cmd.pop(0) # Remove 'a'
             itemParaAdicionar = organizar([' '.join(cmd)])[0]
-            adicionar(itemParaAdicionar[0], itemParaAdicionar[1])
+            exec = adicionar(itemParaAdicionar[0], itemParaAdicionar[1])
+            print("Atividade adicionada.")
         elif cmd[1] == LISTAR:
-            listar() # Imprime na tela a lista formatada
+            exec = listar() # Imprime na tela a lista formatada
         elif cmd[1] == REMOVER: # esperado ['agenda.py', 'r', 'n']
             n = int(cmd[2])
-            remover(n)
+            exec = remover(n)
+            print("Atividade removida.")
         elif cmd[1] == FAZER: # ['agenda.py', 'f', 'n']
             n = int(cmd[2])
-            fazer(n)
+            exec = fazer(n)
+            print("Atividade feita.")
         elif cmd[1] == PRIORIZAR: # ['agenda.py', 'p', 'n', 'prioridade']
             n = int(cmd[2])
             pri = cmd[3].upper()
-            priorizar(n, pri)
-        else :
-            print("Comando inválido.")
+            exec = priorizar(n, pri)
+            print("Atividade priorizada.")
+        elif cmd[1] == AJUDA:
+            exec = ajuda()
+        else:
+            exec = False
+    else :
+        exec = False
+    if not(exec):
+        print("Houve um erro com sua solicitação.\n"
+            "Caso você precise de ajuda tente o comando 'python agenda.py h'")
 
 processarComandos(sys.argv) # ['agenda.py', 'a', 'Mudar', 'de', 'nome']
