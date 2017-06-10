@@ -118,6 +118,11 @@ def removeOrdenador(lista):
         i += 1
     return lista
 
+def numValido(n):
+    if soDigitos(n) and int(n) > 0:
+        return int(n)
+    return False
+
 ''' VALIDAÇÃO DE ATRIBUTOS '''
 # Função que chama as demais funções de validação.
 # Se não for um atributo válido então anexa à descrição
@@ -307,27 +312,42 @@ def remover(num):
     return removido
 
 def fazer(num):
-    feito = remover(num).strip()
-    e = escreverArquivo(feito, ARCHIVE_FILE)
-    if e == False:
+    r = remover(num)
+    if r != False:
+        feito = r.strip()
+        e = escreverArquivo(feito, ARCHIVE_FILE)
+        if e == False:
+            return False
+    else:
         return False
     return True
 
-def priorizar(num, prioridade):
+def priorizar(num, pri):
+    prioridade = '(' + pri + ')'
+    if not(prioridadeValida(prioridade)):
+        return False
     linhas = lerArquivo(TODO_FILE)
-    linha = linhas[num-1] # n == i-1
+    if num > len(linhas):
+        return False
+    linha = linhas[num-1].split()
     # Laço para checar se a linha já tem uma prioridade definida
-    # Se tiver, substitui a letra. Se não, põe a prioridade no início da linha
+    # Se tiver, substitui. Se não, põe a prioridade na posição adequada
     priorizado = False
     i = 0
-    while i < len(linha)-2 and not(priorizado):
-       if linha[i] == '(' and linha[i+2] == ')':
-           linha = linha[:i+1] + prioridade.upper() + linha[i+2:]
+    while i < len(linha) and not(priorizado):
+       if prioridadeValida(linha[i]):
+           linha[i] = prioridade
            priorizado = True
        i += 1
     if not(priorizado):
-        linha = '(' + prioridade + ') ' + linha
-    linhas[num-1] = linha
+        pos = 0
+        if dataValida(linha[pos]):
+            pos += 1
+        if horaValida(linha[pos]):
+            pos += 1
+        linha = linha[:pos] + [prioridade] + linha[pos:]
+    linha = ' '.join(linha)
+    linhas[num-1] = linha + '\n' #.strip() inicial retirou o \n
     atualizarArquivo(linhas, TODO_FILE)
     return True
 
@@ -341,39 +361,46 @@ def ajuda():
          "da atividade a remover).\n"
          "- Fazer: 'python agenda.py f (n)' (n deve ser o número da linha "
          "da atividade a fazer).\n"
-         "- Priorizar: 'python agenda.py p (n) (l)' (n deve ser o número "
-         "da linha a priorizar, l deve ser uma letra entre A-Z).\n")
+         "- Priorizar: 'python agenda.py p (n) (L)' (n deve ser o número "
+         "da linha a priorizar, L deve ser uma letra entre A-Z).\n")
     return True
 
-def processarComandos(cmd) :
+def processarComandos(cmd):
+    exec = False
     if len(cmd) > 1:
         if cmd[1] == ADICIONAR:
             cmd.pop(0) # Remove 'agenda.py'
             cmd.pop(0) # Remove 'a'
             itemParaAdicionar = organizar([' '.join(cmd)])[0]
             exec = adicionar(itemParaAdicionar[0], itemParaAdicionar[1])
-            print("Atividade adicionada.")
+            if exec:
+                print("Atividade adicionada.")
         elif cmd[1] == LISTAR:
             exec = listar() # Imprime na tela a lista formatada
         elif cmd[1] == REMOVER: # esperado ['agenda.py', 'r', 'n']
-            n = int(cmd[2])
-            exec = remover(n)
-            print("Atividade removida.")
+            if len(cmd) == 3:
+                n = numValido(cmd[2])
+                if n != False:
+                    exec = remover(n)
+                    if exec:
+                        print("Atividade removida.")
         elif cmd[1] == FAZER: # ['agenda.py', 'f', 'n']
-            n = int(cmd[2])
-            exec = fazer(n)
-            print("Atividade feita.")
+            if len(cmd) == 3:
+                n = numValido(cmd[2])
+                if n != False:
+                    exec = fazer(n)
+                    if exec:
+                        print("Atividade feita.")
         elif cmd[1] == PRIORIZAR: # ['agenda.py', 'p', 'n', 'prioridade']
-            n = int(cmd[2])
-            pri = cmd[3].upper()
-            exec = priorizar(n, pri)
-            print("Atividade priorizada.")
+            if len(cmd) == 4:
+                n = numValido(cmd[2])
+                if n != False:
+                    pri = cmd[3].upper()
+                    exec = priorizar(n, pri)
+                    if exec:
+                        print("Atividade priorizada.")
         elif cmd[1] == AJUDA:
             exec = ajuda()
-        else:
-            exec = False
-    else :
-        exec = False
     if not(exec):
         print("Houve um erro com sua solicitação.\n"
             "Caso você precise de ajuda tente o comando 'python agenda.py h'")
