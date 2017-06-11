@@ -1,4 +1,4 @@
-# if968-agenda
+# agenda
 ### Projeto da cadeira de Programação 01 do curso de Sistemas de Informação da UFPE
 
 #### Objetivo geral do projeto:
