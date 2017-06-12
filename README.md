@@ -1,12 +1,12 @@
 # agenda
-### Projeto da cadeira de Programação 01 do curso de Sistemas de Informação da UFPE
+## Projeto da cadeira de Programação 01 do curso de Sistemas de Informação da UFPE
 
-#### Resumo do programa:
+## Resumo do programa:
   O agenda.py é um organizador de afazeres, eventos e responsabilidades usável à partir da linha de comando do Windows, Linux (testados) e IOS (não testado). Com o agenda.py é possível adicionar tarefas, listar de forma organizada e visual, marcar tarefas como feitas (e salvar num arquivo separado) ou removê-las.
 
-#### Objetivo geral do projeto:
+## Objetivo geral do projeto:
   Desenvolver um sistema não-trivial em Python;
-#### Objetivos específicos:
+## Objetivos específicos:
 
 a. Praticar a escrita de funções e programas com foco em:
  1. Strings;
@@ -20,7 +20,7 @@ b. Entender completamente o que é pedido no projeto;
 
 c. Anotar dúvidas para sanar em sala de aula.
 
-#### Metodologia:
+## Metodologia:
   Realizar todas as tarefas solicitadas no arquivo projeto.pdf.
   - [x] **Tarefa 0:** ler o documento com bastante cuidado.
   
