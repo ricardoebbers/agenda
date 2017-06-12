@@ -21,13 +21,18 @@ AJUDA = 'h'
 ''' MANIPULAÇÕES DIVERSAS '''
 def lerArquivo(arquivo):
     try:
-        fp = open(arquivo, 'r')#, encoding="utf-8")
+        fp = open(arquivo, 'r', encoding="latin-1")#, encoding="utf-8")
         linhas = fp.readlines()
         fp.close()
     except IOError as err:
-        print("Não foi possível ler o arquivo " + arquivo)
-        print(err)
-        return False
+        try:
+          fp = open(arquivo, 'w')#, encoding="latin-1")#, encoding="utf-8")
+          linhas = []
+          fp.close()
+        except IOError as err:
+          print("Não foi possível ler o arquivo " + arquivo)
+          print(err)
+          return False
     return linhas
 
 def escreverArquivo(texto, arquivo):
