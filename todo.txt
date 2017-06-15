@@ -1,11 +1,11 @@
 (D) Tomar menos café +Saude
-(C) 0545 Acordar antes da função soneca +Work
-(A) 07062017 Estudar integrais +MA026
+0545 (C) Acordar antes da função soneca +Work
+07062017 (A) Estudar integrais +MA026
 (D) Buscar informações sobre treino de JiuJitsu +Saude
-(D) 2230 Dormir cedo +Saude
+2230 (D) Dormir cedo +Saude
 (E) Reler Blink
 (D) Atualizar perfil do Linkedin
-(C) 12062017 Comprar presente para o dia dos namorados
+12062017 (C) Comprar presente para o dia dos namorados
 (B) Startar o projeto de ISI @Casa +ISI
 (C) Aprender alemão
 10062017 (A) Testar intensivamente o projeto de P1

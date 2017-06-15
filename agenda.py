@@ -131,6 +131,29 @@ def numValido(n):
 ''' VALIDAÇÃO DE ATRIBUTOS '''
 # Função que chama as demais funções de validação.
 # Se não for um atributo válido então anexa à descrição
+def checaAtributos(tupla):
+    data, hora, pri, contexto, projeto, desc = ['' for x in range(6)]
+    pref = 0
+    if dataValida(tupla[pref]):
+        data = tupla[pref]
+        pref += 1
+    if horaValida(tupla[pref]):
+        hora = tupla[pref]
+        pref += 1
+    if prioridadeValida(tupla[pref]):
+        pri = tupla[pref]
+        pref += 1
+    suf = len(tupla) - 1
+    if projetoValido(tupla[suf]):
+        projeto = tupla[suf]
+        suf -= 1
+    if contextoValido(tupla[suf]):
+        contexto = tupla[suf]
+        suf -= 1
+    desc = tupla[pref:suf+1]
+    desc = ' '.join(desc)
+    return (data, hora, pri, contexto, projeto, desc)
+'''
 def checaAtributos(lista):
     data, hora, pri, contexto, projeto, desc = ['' for x in range(6)]
     for x in lista:
@@ -147,7 +170,7 @@ def checaAtributos(lista):
         else:
             desc = ' '.join([desc, x])
     return (data, hora, pri, contexto, projeto, desc)
-
+'''
 # Valida que a data ou a hora contém apenas dígitos, desprezando
 # espaços extras no início e no fim.
 def soDigitos(numero) :
