@@ -1,1 +1,3 @@
 *.sqlite
+*.suo
+.vs/VSWorkspaceState.json

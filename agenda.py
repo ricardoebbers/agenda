@@ -131,46 +131,36 @@ def numValido(n):
 ''' VALIDAÇÃO DE ATRIBUTOS '''
 # Função que chama as demais funções de validação.
 # Se não for um atributo válido então anexa à descrição
-def checaAtributos(tupla):
-    data, hora, pri, contexto, projeto, desc = ['' for x in range(6)]
-    pref = 0
-    if dataValida(tupla[pref]):
-        data = tupla[pref]
-        pref += 1
-    if horaValida(tupla[pref]):
-        hora = tupla[pref]
-        pref += 1
-    if prioridadeValida(tupla[pref]):
-        pri = tupla[pref]
-        pref += 1
-    suf = len(tupla) - 1
-    if projetoValido(tupla[suf]):
-        projeto = tupla[suf]
-        suf -= 1
-    if contextoValido(tupla[suf]):
-        contexto = tupla[suf]
-        suf -= 1
-    desc = tupla[pref:suf+1]
-    desc = ' '.join(desc)
-    return (data, hora, pri, contexto, projeto, desc)
-'''
 def checaAtributos(lista):
     data, hora, pri, contexto, projeto, desc = ['' for x in range(6)]
-    for x in lista:
-        if dataValida(x) and data == '':
-            data = x
-        elif horaValida(x) and hora == '':
-            hora = x
-        elif prioridadeValida(x) and pri == '':
-            pri = x
-        elif contextoValido(x) and contexto == '':
-            contexto = x
-        elif projetoValido(x) and projeto == '':
-            projeto = x
-        else:
-            desc = ' '.join([desc, x])
+    pref = 0
+    if dataValida(lista[pref]):
+        data = lista[pref]
+        if pref < len(lista) - 1:
+            pref += 1
+    if horaValida(lista[pref]):
+        hora = lista[pref]
+        if pref < len(lista) - 1:
+            pref += 1
+    if prioridadeValida(lista[pref]):
+        pri = lista[pref]
+        if pref < len(lista) - 1:
+            pref += 1
+    suf = len(lista) - 1
+    if projetoValido(lista[suf]):
+        projeto = lista[suf]
+        if suf > 1:
+            suf -= 1
+    if contextoValido(lista[suf]):
+        contexto = lista[suf]
+        if suf > 1:
+            suf -= 1
+    desc = lista[pref:suf+1]
+    desc = ' '.join(desc)
+    if desc == ''.join([data, hora, pri, contexto, projeto]):
+        desc = ''
     return (data, hora, pri, contexto, projeto, desc)
-'''
+
 # Valida que a data ou a hora contém apenas dígitos, desprezando
 # espaços extras no início e no fim.
 def soDigitos(numero) :
@@ -287,9 +277,7 @@ def adicionar(desc, extras):
     if desc  == '':
         return False
     else:
-        # Faz todas as checagens necessárias dos atributos
-        data, hora, pri, contexto, projeto = checaAtributos(extras)[:5]
-        # Cria uma string dos atributos
+        data, hora, pri, contexto, projeto = extras
         novaAtividade = ' '.join([data, hora, pri, desc, contexto, projeto])
         novaAtividade = ' '.join(novaAtividade.split()) # Remove espaços duplos
         # Escreve no TODO_FILE.
@@ -394,42 +382,42 @@ def ajuda():
     return True
 
 def processarComandos(cmd):
-    exec = False
+    executado = False
     if len(cmd) > 1:
         if cmd[1] == ADICIONAR:
             cmd.pop(0) # Remove 'agenda.py'
             cmd.pop(0) # Remove 'a'
             itemParaAdicionar = organizar([' '.join(cmd)])[0]
-            exec = adicionar(itemParaAdicionar[0], itemParaAdicionar[1])
-            if exec:
+            executado = adicionar(itemParaAdicionar[0], itemParaAdicionar[1])
+            if executado:
                 print("Atividade adicionada.")
         elif cmd[1] == LISTAR:
-            exec = listar() # Imprime na tela a lista formatada
+            executado = listar() # Imprime na tela a lista formatada
         elif cmd[1] == REMOVER: # esperado ['agenda.py', 'r', 'n']
             if len(cmd) == 3:
                 n = numValido(cmd[2])
                 if n != False:
-                    exec = remover(n)
-                    if exec:
+                    executado = remover(n)
+                    if executado:
                         print("Atividade removida.")
         elif cmd[1] == FAZER: # ['agenda.py', 'f', 'n']
             if len(cmd) == 3:
                 n = numValido(cmd[2])
                 if n != False:
-                    exec = fazer(n)
-                    if exec:
+                    executado = fazer(n)
+                    if executado:
                         print("Atividade feita.")
         elif cmd[1] == PRIORIZAR: # ['agenda.py', 'p', 'n', 'prioridade']
             if len(cmd) == 4:
                 n = numValido(cmd[2])
                 if n != False:
                     pri = cmd[3].upper()
-                    exec = priorizar(n, pri)
-                    if exec:
+                    executado = priorizar(n, pri)
+                    if executado:
                         print("Atividade priorizada.")
         elif cmd[1] == AJUDA:
-            exec = ajuda()
-    if not(exec):
+            executado = ajuda()
+    if not(executado):
         print("Houve um erro com sua solicitação.\n"
             "Caso você precise de ajuda tente o comando 'python agenda.py h'")
 

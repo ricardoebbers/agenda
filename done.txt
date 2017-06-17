@@ -8,3 +8,21 @@ Talvez #jogos#da#velha#? +ProjetoP1
 -1500 é uma hora válida? +ProjetoP1
 (A) 06062017 Revisar assunto da prova de Mat. Discreta +IF967
 11062017 Lavar a moto
+10062017 1530 (A) atividade teste
+12345678 1530 teste
+12345678 1430 teste 2
+12345678 1630 teste 3
+teste 4
+teste 5
+10122017 aniversario
+teste 5
+1530 (A)
+1630 teste 5
+1630 teste 7
+1630 1630
+1530 teste
+1630 1630
+1630 (A) 1530
+1530 1530
+11062017 1530 (A) atividade teste
+1530 (a) teste
